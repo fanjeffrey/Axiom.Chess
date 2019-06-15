@@ -1,15 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
 using SilverChess.Model;
+using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Shapes;
 
 namespace SilverChess
 {
@@ -35,7 +30,7 @@ namespace SilverChess
         protected double leftMargin;
         protected double fileSpace;
         protected double rankSpace;
-        protected Color lineColor; 
+        protected Color lineColor;
 
         protected PiecePoint[,] piecePoints;
         protected ChessBoard board;
@@ -61,7 +56,7 @@ namespace SilverChess
             this.lineColor = lineColor;
 
             this.board = board;
-            
+
             BuildPiecePoints();
 
             DrawGrid();
@@ -113,11 +108,11 @@ namespace SilverChess
         //画士行交叉线
         private void DrawCrossLines()
         {
-            this.DecorationCanvas.Children.Add( GetLine(board.PositionAt(3, 0), board.PositionAt(5, 2)) );
-            this.DecorationCanvas.Children.Add( GetLine(board.PositionAt(3, 2), board.PositionAt(5, 0)) );
+            this.DecorationCanvas.Children.Add(GetLine(board.PositionAt(3, 0), board.PositionAt(5, 2)));
+            this.DecorationCanvas.Children.Add(GetLine(board.PositionAt(3, 2), board.PositionAt(5, 0)));
 
-            this.DecorationCanvas.Children.Add( GetLine(board.PositionAt(3, 7), board.PositionAt(5, 9)) );
-            this.DecorationCanvas.Children.Add( GetLine(board.PositionAt(3, 9), board.PositionAt(5, 7)) );
+            this.DecorationCanvas.Children.Add(GetLine(board.PositionAt(3, 7), board.PositionAt(5, 9)));
+            this.DecorationCanvas.Children.Add(GetLine(board.PositionAt(3, 9), board.PositionAt(5, 7)));
         }
 
         //画所有行线
@@ -140,14 +135,14 @@ namespace SilverChess
 
         private void DrawRank(ChessRank rank)
         {
-            this.GridCanvas.Children.Add( GetLine(rank.PositionAtFirstFile, rank.PositionAtNinthFile) );
+            this.GridCanvas.Children.Add(GetLine(rank.PositionAtFirstFile, rank.PositionAtNinthFile));
         }
 
         private void DrawFile(ChessFile file)
         {
             if (file.X == PositionView.FirstFileNum - 1 || file.X == PositionView.NinthFileNum - 1)
             {
-                this.GridCanvas.Children.Add( GetLine(file.PositionAtTop, file.PositionAtBottom) );
+                this.GridCanvas.Children.Add(GetLine(file.PositionAtTop, file.PositionAtBottom));
             }
             else
             {
@@ -208,13 +203,13 @@ namespace SilverChess
             for (int i = 0; i < PositionView.NinthFileNum; i++)
             {
                 for (int j = 0; j < PositionView.TenthRankNum; j++)
-                {                    
-                    if (piecePoints[i,j].InHotspot(x,y))
-                        return piecePoints[i,j];
+                {
+                    if (piecePoints[i, j].InHotspot(x, y))
+                        return piecePoints[i, j];
                 }
             }
 
-           return null;
+            return null;
         }
 
         /// <summary>
@@ -225,15 +220,15 @@ namespace SilverChess
         /// <returns></returns>
         public PiecePoint GetPiecePointAt(int x, int y)
         {
-            return piecePoints[x,y];
+            return piecePoints[x, y];
         }
     }
 
     public class PiecePoint
     {
         public PiecePosition Position { get; set; }
-        public double HotspotRadius{get;set;}
-        public Point CenterPoint { get; set; } 
+        public double HotspotRadius { get; set; }
+        public Point CenterPoint { get; set; }
 
         public PiecePoint(PiecePosition p, Point centerPoint, double hotspotRadius)
         {
@@ -249,7 +244,7 @@ namespace SilverChess
 
         public double GetTop(double pieceHeight)
         {
-            return CenterPoint.Y - pieceHeight / 2; 
+            return CenterPoint.Y - pieceHeight / 2;
         }
 
         public bool InHotspot(Point p)
@@ -259,14 +254,12 @@ namespace SilverChess
 
         public bool InHotspot(double x, double y)
         {
-            double x2 = Math.Pow((x-CenterPoint.X),2);
-            double y2 = Math.Pow((y-CenterPoint.Y),2);
+            double x2 = Math.Pow((x - CenterPoint.X), 2);
+            double y2 = Math.Pow((y - CenterPoint.Y), 2);
 
             double r = Math.Sqrt(x2 + y2);
 
             return r < HotspotRadius;
         }
     }
-
-
 }

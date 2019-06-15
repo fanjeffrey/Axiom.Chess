@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Shapes;
-using SilverChess.Model;
+﻿using SilverChess.Model;
+using Windows.Foundation;
+using Windows.UI;
+using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Media;
 
 namespace SilverChess
 {
@@ -43,7 +37,7 @@ namespace SilverChess
             PieceText.Text = piece.Name;
 
             //place piece at point
-            PiecePoint = xiangQiUI.GetPiecePoint(this);  
+            PiecePoint = xiangQiUI.GetPiecePoint(this);
         }
 
         public void ApplyVisual(PieceVisual visual)
@@ -78,7 +72,7 @@ namespace SilverChess
 
         private void ResetPiecePoint()
         {
-            this.SetValue(Canvas.LeftProperty, PiecePoint.GetLeft(pieceWidth));        
+            this.SetValue(Canvas.LeftProperty, PiecePoint.GetLeft(pieceWidth));
             this.SetValue(Canvas.TopProperty, PiecePoint.GetTop(pieceHeight));
         }
 
@@ -88,40 +82,39 @@ namespace SilverChess
             PieceText.Foreground = new SolidColorBrush(c);
         }
 
-        private void UserControl_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        private void UserControl_PointerPressed(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             FrameworkElement element = sender as FrameworkElement;
             piecePointOnMouseDown = PiecePoint;
-            mousePosition = e.GetPosition(null);
+            mousePosition = e.GetCurrentPoint(null).Position;//.GetPosition(null);
             trackingMouseMove = true;
             if (null != element)
             {
-                element.CaptureMouse();
-                element.Cursor = Cursors.Hand;
+                element.CapturePointer(e.Pointer);
+                //element.Cursor = Cursors.Hand;
                 originalZIndex = (int)element.GetValue(Canvas.ZIndexProperty);
                 element.SetValue(Canvas.ZIndexProperty, zIndexOnDragging);
             }
         }
 
-        private void UserControl_MouseMove(object sender, MouseEventArgs e)
+        private void UserControl_PointerMoved(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             FrameworkElement element = sender as FrameworkElement;
             if (trackingMouseMove)
             {
-                double deltaV = e.GetPosition(null).Y - mousePosition.Y;
-                double deltaH = e.GetPosition(null).X - mousePosition.X;
+                double deltaV = e.GetCurrentPoint(null).Position.Y - mousePosition.Y;
+                double deltaH = e.GetCurrentPoint(null).Position.X - mousePosition.X;
                 double newTop = deltaV + (double)element.GetValue(Canvas.TopProperty);
                 double newLeft = deltaH + (double)element.GetValue(Canvas.LeftProperty);
 
                 element.SetValue(Canvas.TopProperty, newTop);
                 element.SetValue(Canvas.LeftProperty, newLeft);
 
-                mousePosition = e.GetPosition(null);
+                mousePosition = e.GetCurrentPoint(null).Position;
             }
-
         }
 
-        private void UserControl_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        private void UserControl_PointerReleased(object sender, Windows.UI.Xaml.Input.PointerRoutedEventArgs e)
         {
             FrameworkElement element = sender as FrameworkElement;
 
@@ -129,14 +122,13 @@ namespace SilverChess
             double centerY = (double)element.GetValue(Canvas.TopProperty) + pieceHeight / 2;
             PiecePoint newPiecePoint = xiangQiUI.GetNearestPiecePointFrom(centerX, centerY);
 
-            MoveTo(newPiecePoint);            
+            MoveTo(newPiecePoint);
 
             trackingMouseMove = false;
-            element.ReleaseMouseCapture();
-            element.Cursor = null;
+            element.ReleasePointerCapture(e.Pointer);
+            //element.Cursor = null;
             element.SetValue(Canvas.ZIndexProperty, originalZIndex);
             mousePosition.X = mousePosition.Y = 0;
-
         }
 
         #endregion
